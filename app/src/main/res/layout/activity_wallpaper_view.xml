@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".wallpapers.WallpaperView"
+    android:background="@color/black"
+    >
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:id="@+id/wallpaperImg"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/setBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#45FFFFFF"
+        android:fontFamily="serif-monospace"
+        android:text="@string/set_wallpaper"
+        android:textColor="#AECDD1"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

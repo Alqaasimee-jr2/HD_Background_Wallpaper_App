@@ -1,22 +1,25 @@
 package com.example.hd_background_wallpaper.categories;
 
-import android.graphics.Bitmap;
-
 public class CategoriesList {
+    private final String name;
+    private final String coverAsset;
+    private final int count;
 
-private String name;
-private Bitmap bitmap;
-
-public CategoriesList(String name, Bitmap bitmap){
-    this.name = name;
-    this.bitmap = bitmap;
-}
+    public CategoriesList(String name, String coverAsset, int count) {
+        this.name = name;
+        this.coverAsset = coverAsset;
+        this.count = count;
+    }
 
     public String getName() {
         return name;
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
+    public String getCoverAsset() {
+        return coverAsset;
+    }
+
+    public int getCount() {
+        return count;
     }
 }

@@ -37,3 +37,5 @@ local.properties
 
 # SDD artifacts
 .superpowers/
+generated_wallpapers_review/
+

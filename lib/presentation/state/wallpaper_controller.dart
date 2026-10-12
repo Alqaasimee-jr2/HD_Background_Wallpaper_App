@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../data/services/collections_storage_service.dart';
@@ -21,8 +22,10 @@ class WallpaperController extends ChangeNotifier {
   final CollectionsStorageService _storageService;
   final NativeWallpaperBridge _nativeBridge;
   final ImagePicker _imagePicker;
+  final Random _random = Random();
 
   List<WallpaperItem> _offlineWallpapers = <WallpaperItem>[];
+  List<WallpaperItem> _shuffledOfflineWallpapers = <WallpaperItem>[];
   List<WallpaperItem> _cloudWallpapers = <WallpaperItem>[];
   List<WallpaperItem> _galleryWallpapers = <WallpaperItem>[];
   Set<String> _favoriteIds = <String>{};
@@ -32,6 +35,8 @@ class WallpaperController extends ChangeNotifier {
   String _selectedCloudTopic = 'All';
   String _searchQuery = '';
   MockupMode _mockupMode = MockupMode.clean;
+  bool _compactGrid = false;
+  bool _isShuffled = false;
   bool _isInitialized = false;
 
   List<WallpaperItem> get offlineWallpapers => _offlineWallpapers;
@@ -43,6 +48,8 @@ class WallpaperController extends ChangeNotifier {
   String get selectedCloudTopic => _selectedCloudTopic;
   String get searchQuery => _searchQuery;
   MockupMode get mockupMode => _mockupMode;
+  bool get compactGrid => _compactGrid;
+  bool get isShuffled => _isShuffled;
   bool get isInitialized => _isInitialized;
 
   List<String> get offlineCategories => WallpaperCatalogService.offlineCategories;
@@ -50,6 +57,7 @@ class WallpaperController extends ChangeNotifier {
 
   Future<void> initialize() async {
     _offlineWallpapers = await _catalogService.loadOfflineWallpapers();
+    _shuffledOfflineWallpapers = List<WallpaperItem>.from(_offlineWallpapers);
     _cloudWallpapers = _catalogService.getCloudWallpapers();
     _favoriteIds = await _storageService.loadFavorites();
     _collections = await _storageService.loadCollections();
@@ -84,9 +92,42 @@ class WallpaperController extends ChangeNotifier {
         ..._galleryWallpapers,
       ];
 
+  /// Curated spotlight items highlighting story-mode & AMOLED pieces across categories.
+  List<WallpaperItem> get spotlightWallpapers {
+    if (_offlineWallpapers.isEmpty) return const <WallpaperItem>[];
+    final preferredPrefixes = <String>[
+      'black__Lone_Wolf_Falling_Star',
+      'scifi__Astronaut_Streetlamp_In_Space',
+      'abstract__Kintsugi_Gold_Porcelain_Sphere',
+      'nature__Midnight_Storm_Cliff_Cabin',
+      'minimal__Brutalist_Archway_Violet_Eclipse',
+      'anime__Cyberpunk_Ronin_Neon_Rain',
+      'game__Spartan_God_Of_War_Ember',
+      'quotes__',
+    ];
+    final picks = <WallpaperItem>[];
+    for (final prefix in preferredPrefixes) {
+      for (final item in _offlineWallpapers) {
+        if (item.fileName.startsWith(prefix) && !picks.contains(item)) {
+          picks.add(item);
+          break;
+        }
+      }
+    }
+    if (picks.length < 6) {
+      for (final item in _offlineWallpapers.take(8)) {
+        if (!picks.contains(item)) picks.add(item);
+        if (picks.length >= 6) break;
+      }
+    }
+    return picks;
+  }
+
   List<WallpaperItem> get filteredOfflineWallpapers {
     final normalizedQuery = _searchQuery.trim().toLowerCase();
-    return _offlineWallpapers.where((item) {
+    final sourceList =
+        _isShuffled ? _shuffledOfflineWallpapers : _offlineWallpapers;
+    return sourceList.where((item) {
       final matchesCategory =
           _selectedCategory == WallpaperCatalogService.catAll ||
               item.category == _selectedCategory;
@@ -131,6 +172,32 @@ class WallpaperController extends ChangeNotifier {
       if (item.category == category) return item;
     }
     return _offlineWallpapers.first;
+  }
+
+  WallpaperItem? pickRandomWallpaper() {
+    final pool = filteredOfflineWallpapers.isNotEmpty
+        ? filteredOfflineWallpapers
+        : _offlineWallpapers;
+    if (pool.isEmpty) return null;
+    return pool[_random.nextInt(pool.length)];
+  }
+
+  void toggleCompactGrid() {
+    _compactGrid = !_compactGrid;
+    notifyListeners();
+  }
+
+  void shuffleWallpapers() {
+    _shuffledOfflineWallpapers = List<WallpaperItem>.from(_offlineWallpapers)
+      ..shuffle(_random);
+    _isShuffled = true;
+    notifyListeners();
+  }
+
+  void resetOrder() {
+    if (!_isShuffled) return;
+    _isShuffled = false;
+    notifyListeners();
   }
 
   void setSelectedCategory(String category) {
@@ -191,6 +258,12 @@ class WallpaperController extends ChangeNotifier {
         createdAt: DateTime.now(),
       ),
     ];
+    notifyListeners();
+    await _storageService.saveCollections(_collections);
+  }
+
+  Future<void> deleteCollection(String name) async {
+    _collections = _collections.where((c) => c.name != name).toList();
     notifyListeners();
     await _storageService.saveCollections(_collections);
   }

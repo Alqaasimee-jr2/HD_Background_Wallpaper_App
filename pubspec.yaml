@@ -1,7 +1,7 @@
 name: hd_background_wallpaper
-description: "4K & HD Background Wallpaper Studio with 266 offline wallpapers, Cloud 4K feed, Custom Collections, and Live Lock/Home Mockup Preview."
+description: "4K & HD Background Wallpaper Studio with 900 curated offline wallpapers across 9 categories, Cloud 4K feed, Custom Collections, and Live Lock/Home Mockup Preview."
 publish_to: 'none'
-version: 2.0.0+2
+version: 2.1.0+3
 
 environment:
   sdk: ^3.11.0

@@ -8,7 +8,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('WallpaperCatalogService unit tests', () {
-    test('categorizeFileName classifies all 6 offline categories accurately', () {
+    test('categorizeFileName classifies all 9 offline categories accurately', () {
       expect(
         WallpaperCatalogService.categorizeFileName('game22.jpg'),
         WallpaperCatalogService.catGame,
@@ -34,17 +34,33 @@ void main() {
         WallpaperCatalogService.catBlack,
       );
       expect(
+        WallpaperCatalogService.categorizeFileName('minimal__Brutalist_Archway_Violet_Eclipse_001.jpg'),
+        WallpaperCatalogService.catMinimal,
+      );
+      expect(
+        WallpaperCatalogService.categorizeFileName('quotes__Focus_On_Yourself_001.jpg'),
+        WallpaperCatalogService.catQuotes,
+      );
+      expect(
+        WallpaperCatalogService.categorizeFileName('scifi__Porsche_911_Midnight_001.jpg'),
+        WallpaperCatalogService.catSciFiCars,
+      );
+      expect(
         WallpaperCatalogService.categorizeFileName('Feels bg.jpg'),
         WallpaperCatalogService.catRandom,
       );
+      expect(
+        WallpaperCatalogService.formatDisplayName('anime__Sukuna_Crimson_Shrine_001.jpg'),
+        'Sukuna Crimson Shrine',
+      );
     });
 
-    test('loads all 266 bundled offline assets and 17 cloud 4K wallpapers', () async {
+    test('loads all 900 bundled offline assets and 17 cloud 4K wallpapers', () async {
       final service = WallpaperCatalogService();
       final offline = await service.loadOfflineWallpapers();
       final cloud = service.getCloudWallpapers();
 
-      expect(offline.length, 266);
+      expect(offline.length, 900);
       expect(cloud.length, greaterThanOrEqualTo(16));
       expect(
         offline.any((w) => w.fileName == 'game22.jpg'),
@@ -70,8 +86,8 @@ void main() {
       final controller = WallpaperController();
       await controller.initialize();
 
-      expect(controller.offlineWallpapers.length, 266);
-      expect(controller.filteredOfflineWallpapers.length, 266);
+      expect(controller.offlineWallpapers.length, 900);
+      expect(controller.filteredOfflineWallpapers.length, 900);
 
       controller.setSelectedCategory(WallpaperCatalogService.catGame);
       expect(controller.filteredOfflineWallpapers, isNotEmpty);
@@ -81,6 +97,13 @@ void main() {
         ),
         isTrue,
       );
+
+      controller.setSelectedCategory(WallpaperCatalogService.catMinimal);
+      expect(controller.filteredOfflineWallpapers, isNotEmpty);
+      controller.setSelectedCategory(WallpaperCatalogService.catQuotes);
+      expect(controller.filteredOfflineWallpapers, isNotEmpty);
+      controller.setSelectedCategory(WallpaperCatalogService.catSciFiCars);
+      expect(controller.filteredOfflineWallpapers, isNotEmpty);
 
       controller.setSelectedCategory(WallpaperCatalogService.catAll);
       controller.setSearchQuery('valorant');

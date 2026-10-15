@@ -219,7 +219,10 @@ class WallpaperCatalogService {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
     if (base.isEmpty) return 'HD Wallpaper';
-    return base[0].toUpperCase() + base.substring(1);
+    return base.split(' ').map((word) {
+      if (word.isEmpty) return '';
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 
   static String accentForCategory(String category) {

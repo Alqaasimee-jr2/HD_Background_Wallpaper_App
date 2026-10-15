@@ -3,6 +3,7 @@ import '../../domain/models/wallpaper_item.dart';
 import '../state/wallpaper_controller.dart';
 import '../widgets/live_mockup_overlays.dart';
 import '../widgets/wallpaper_card.dart';
+import '../widgets/color_filter_layer.dart';
 
 class WallpaperDetailScreen extends StatefulWidget {
   const WallpaperDetailScreen({
@@ -26,6 +27,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
   late List<WallpaperItem> _items;
   late int _currentIndex;
   late PageController _pageController;
+  WallpaperFilterMode _filterMode = WallpaperFilterMode.none;
 
   WallpaperItem get _activeItem => _items[_currentIndex];
 
@@ -337,42 +339,45 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                     setState(() => _hideControls = !_hideControls);
                   }
                 },
-                child: _items.length == 1
-                    ? InteractiveViewer(
-                        minScale: 1.0,
-                        maxScale: 4.0,
-                        child: Hero(
-                          tag: 'wallpaper_${current.id}',
-                          child: WallpaperImageView(
-                            item: current,
-                            fit: BoxFit.cover,
+                child: ColorFilterLayer(
+                  mode: _filterMode,
+                  child: _items.length == 1
+                      ? InteractiveViewer(
+                          minScale: 1.0,
+                          maxScale: 4.0,
+                          child: Hero(
+                            tag: 'wallpaper_${current.id}',
+                            child: WallpaperImageView(
+                              item: current,
+                              fit: BoxFit.cover,
+                            ),
                           ),
+                        )
+                      : PageView.builder(
+                          controller: _pageController,
+                          itemCount: _items.length,
+                          onPageChanged: (idx) {
+                            setState(() => _currentIndex = idx);
+                          },
+                          itemBuilder: (context, index) {
+                            final pageItem = _items[index];
+                            final imageWidget = WallpaperImageView(
+                              item: pageItem,
+                              fit: BoxFit.cover,
+                            );
+                            return InteractiveViewer(
+                              minScale: 1.0,
+                              maxScale: 4.0,
+                              child: index == _currentIndex
+                                  ? Hero(
+                                      tag: 'wallpaper_${pageItem.id}',
+                                      child: imageWidget,
+                                    )
+                                  : imageWidget,
+                            );
+                          },
                         ),
-                      )
-                    : PageView.builder(
-                        controller: _pageController,
-                        itemCount: _items.length,
-                        onPageChanged: (idx) {
-                          setState(() => _currentIndex = idx);
-                        },
-                        itemBuilder: (context, index) {
-                          final pageItem = _items[index];
-                          final imageWidget = WallpaperImageView(
-                            item: pageItem,
-                            fit: BoxFit.cover,
-                          );
-                          return InteractiveViewer(
-                            minScale: 1.0,
-                            maxScale: 4.0,
-                            child: index == _currentIndex
-                                ? Hero(
-                                    tag: 'wallpaper_${pageItem.id}',
-                                    child: imageWidget,
-                                  )
-                                : imageWidget,
-                          );
-                        },
-                      ),
+                ),
               ),
               if (mode == MockupMode.lockScreen) const LockScreenMockupOverlay(),
               if (mode == MockupMode.homeScreen) const HomeScreenMockupOverlay(),
@@ -507,6 +512,42 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                                   selected: mode == MockupMode.homeScreen,
                                   onTap: () => widget.controller
                                       .setMockupMode(MockupMode.homeScreen),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xD806080D),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: Colors.white24),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                _MockupModeChip(
+                                  label: 'Normal',
+                                  selected: _filterMode == WallpaperFilterMode.none,
+                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.none),
+                                ),
+                                _MockupModeChip(
+                                  label: 'B&W',
+                                  selected: _filterMode == WallpaperFilterMode.grayscale,
+                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.grayscale),
+                                ),
+                                _MockupModeChip(
+                                  label: 'Inverted',
+                                  selected: _filterMode == WallpaperFilterMode.inverted,
+                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.inverted),
+                                ),
+                                _MockupModeChip(
+                                  label: 'Sepia',
+                                  selected: _filterMode == WallpaperFilterMode.sepia,
+                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.sepia),
                                 ),
                               ],
                             ),

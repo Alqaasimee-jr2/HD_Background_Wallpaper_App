@@ -4,6 +4,7 @@ import 'package:hd_background_wallpaper/domain/models/wallpaper_item.dart';
 import 'package:hd_background_wallpaper/main.dart';
 import 'package:hd_background_wallpaper/presentation/screens/wallpaper_detail_screen.dart';
 import 'package:hd_background_wallpaper/presentation/state/wallpaper_controller.dart';
+import 'package:hd_background_wallpaper/presentation/state/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -15,6 +16,7 @@ void main() {
     WidgetTester tester,
   ) async {
     final controller = WallpaperController();
+    final themeController = ThemeController();
     await controller.initialize();
 
     // Test mobile viewport (390 x 844)
@@ -22,7 +24,10 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(HDWallpaperStudioApp(controller: controller));
+    await tester.pumpWidget(HDWallpaperStudioApp(
+      controller: controller,
+      themeController: themeController,
+    ));
     await tester.pump();
 
     expect(find.text('4K Wallpaper Studio'), findsOneWidget);

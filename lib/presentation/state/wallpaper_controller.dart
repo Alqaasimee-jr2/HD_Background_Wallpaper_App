@@ -13,10 +13,10 @@ class WallpaperController extends ChangeNotifier {
     CollectionsStorageService? storageService,
     NativeWallpaperBridge? nativeBridge,
     ImagePicker? imagePicker,
-  })  : _catalogService = catalogService ?? WallpaperCatalogService(),
-        _storageService = storageService ?? CollectionsStorageService(),
-        _nativeBridge = nativeBridge ?? NativeWallpaperBridge(),
-        _imagePicker = imagePicker ?? ImagePicker();
+  }) : _catalogService = catalogService ?? WallpaperCatalogService(),
+       _storageService = storageService ?? CollectionsStorageService(),
+       _nativeBridge = nativeBridge ?? NativeWallpaperBridge(),
+       _imagePicker = imagePicker ?? ImagePicker();
 
   final WallpaperCatalogService _catalogService;
   final CollectionsStorageService _storageService;
@@ -30,6 +30,11 @@ class WallpaperController extends ChangeNotifier {
   List<WallpaperItem> _galleryWallpapers = <WallpaperItem>[];
   Set<String> _favoriteIds = <String>{};
   List<CustomCollection> _collections = <CustomCollection>[];
+
+  // Performance caches
+  Map<String, WallpaperItem> _allWallpapersMap = <String, WallpaperItem>{};
+  List<WallpaperItem>? _spotlightCache;
+  final Map<String, int> _categoryCountsCache = <String, int>{};
 
   String _selectedCategory = WallpaperCatalogService.catAll;
   String _selectedCloudTopic = 'All';
@@ -52,7 +57,8 @@ class WallpaperController extends ChangeNotifier {
   bool get isShuffled => _isShuffled;
   bool get isInitialized => _isInitialized;
 
-  List<String> get offlineCategories => WallpaperCatalogService.offlineCategories;
+  List<String> get offlineCategories =>
+      WallpaperCatalogService.offlineCategories;
   List<String> get cloudTopics => WallpaperCatalogService.cloudTopics;
 
   Future<void> initialize() async {
@@ -64,7 +70,16 @@ class WallpaperController extends ChangeNotifier {
     final galleryPaths = await _storageService.loadGalleryPaths();
     _galleryWallpapers = _buildGalleryItems(galleryPaths);
     _isInitialized = true;
+    _rebuildCaches();
     notifyListeners();
+  }
+
+  void _rebuildCaches() {
+    _allWallpapersMap = <String, WallpaperItem>{
+      for (final item in allKnownWallpapers) item.id: item,
+    };
+    _spotlightCache = null;
+    _categoryCountsCache.clear();
   }
 
   List<WallpaperItem> _buildGalleryItems(List<String> paths) {
@@ -87,13 +102,14 @@ class WallpaperController extends ChangeNotifier {
   }
 
   List<WallpaperItem> get allKnownWallpapers => <WallpaperItem>[
-        ..._offlineWallpapers,
-        ..._cloudWallpapers,
-        ..._galleryWallpapers,
-      ];
+    ..._offlineWallpapers,
+    ..._cloudWallpapers,
+    ..._galleryWallpapers,
+  ];
 
   /// Curated spotlight items highlighting story-mode & AMOLED pieces across categories.
   List<WallpaperItem> get spotlightWallpapers {
+    if (_spotlightCache != null) return _spotlightCache!;
     if (_offlineWallpapers.isEmpty) return const <WallpaperItem>[];
     final preferredPrefixes = <String>[
       'black__Lone_Wolf_Falling_Star',
@@ -120,18 +136,21 @@ class WallpaperController extends ChangeNotifier {
         if (picks.length >= 6) break;
       }
     }
+    _spotlightCache = picks;
     return picks;
   }
 
   List<WallpaperItem> get filteredOfflineWallpapers {
     final normalizedQuery = _searchQuery.trim().toLowerCase();
-    final sourceList =
-        _isShuffled ? _shuffledOfflineWallpapers : _offlineWallpapers;
+    final sourceList = _isShuffled
+        ? _shuffledOfflineWallpapers
+        : _offlineWallpapers;
     return sourceList.where((item) {
       final matchesCategory =
           _selectedCategory == WallpaperCatalogService.catAll ||
-              item.category == _selectedCategory;
-      final matchesSearch = normalizedQuery.isEmpty ||
+          item.category == _selectedCategory;
+      final matchesSearch =
+          normalizedQuery.isEmpty ||
           item.title.toLowerCase().contains(normalizedQuery) ||
           item.fileName.toLowerCase().contains(normalizedQuery) ||
           item.category.toLowerCase().contains(normalizedQuery);
@@ -152,15 +171,26 @@ class WallpaperController extends ChangeNotifier {
   }
 
   List<WallpaperItem> get favoriteWallpapers {
-    final all = allKnownWallpapers;
-    return all.where((item) => _favoriteIds.contains(item.id)).toList();
+    final results = <WallpaperItem>[];
+    for (final id in _favoriteIds) {
+      final item = _allWallpapersMap[id];
+      if (item != null) results.add(item);
+    }
+    return results;
   }
 
   int countForCategory(String category) {
     if (category == WallpaperCatalogService.catAll) {
       return _offlineWallpapers.length;
     }
-    return _offlineWallpapers.where((w) => w.category == category).length;
+    if (_categoryCountsCache.containsKey(category)) {
+      return _categoryCountsCache[category]!;
+    }
+    final count = _offlineWallpapers
+        .where((w) => w.category == category)
+        .length;
+    _categoryCountsCache[category] = count;
+    return count;
   }
 
   WallpaperItem? coverForCategory(String category) {
@@ -309,8 +339,9 @@ class WallpaperController extends ChangeNotifier {
     _collections = _collections.map((col) {
       if (col.name == collectionName) {
         return col.copyWith(
-          wallpaperIds:
-              col.wallpaperIds.where((id) => id != wallpaperId).toList(),
+          wallpaperIds: col.wallpaperIds
+              .where((id) => id != wallpaperId)
+              .toList(),
         );
       }
       return col;
@@ -320,12 +351,9 @@ class WallpaperController extends ChangeNotifier {
   }
 
   List<WallpaperItem> wallpapersForCollection(CustomCollection collection) {
-    final map = <String, WallpaperItem>{
-      for (final item in allKnownWallpapers) item.id: item,
-    };
     final results = <WallpaperItem>[];
     for (final id in collection.wallpaperIds) {
-      final match = map[id];
+      final match = _allWallpapersMap[id];
       if (match != null) {
         results.add(match);
       }
@@ -349,6 +377,7 @@ class WallpaperController extends ChangeNotifier {
       currentPaths.add(filePath);
       await _storageService.saveGalleryPaths(currentPaths);
       _galleryWallpapers = _buildGalleryItems(currentPaths);
+      _rebuildCaches();
       notifyListeners();
     }
     return _galleryWallpapers.firstWhere((e) => e.path == filePath);

@@ -5,11 +5,19 @@ import '../../domain/models/wallpaper_item.dart';
 import '../state/wallpaper_controller.dart';
 import '../widgets/wallpaper_card.dart';
 import 'wallpaper_detail_screen.dart';
+import 'categories_tab.dart';
+import 'settings_tab.dart';
+import '../state/theme_controller.dart';
 
 class HomeShellScreen extends StatefulWidget {
-  const HomeShellScreen({super.key, required this.controller});
+  const HomeShellScreen({
+    super.key,
+    required this.controller,
+    required this.themeController,
+  });
 
   final WallpaperController controller;
+  final ThemeController themeController;
 
   @override
   State<HomeShellScreen> createState() => _HomeShellScreenState();
@@ -18,11 +26,43 @@ class HomeShellScreen extends StatefulWidget {
 class _HomeShellScreenState extends State<HomeShellScreen> {
   int _selectedIndex = 0;
   final TextEditingController _searchTextController = TextEditingController();
+  final ScrollController _exploreScrollController = ScrollController();
+  final ScrollController _cloudScrollController = ScrollController();
+  bool _showBackToTop = false;
+
+  void _scrollListener(ScrollController controller) {
+    if (controller.hasClients) {
+      if (controller.offset > 400 && !_showBackToTop) {
+        setState(() => _showBackToTop = true);
+      } else if (controller.offset <= 400 && _showBackToTop) {
+        setState(() => _showBackToTop = false);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _exploreScrollController.addListener(() => _scrollListener(_exploreScrollController));
+    _cloudScrollController.addListener(() => _scrollListener(_cloudScrollController));
+  }
 
   @override
   void dispose() {
     _searchTextController.dispose();
+    _exploreScrollController.dispose();
+    _cloudScrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToTop() {
+    final activeController = _selectedIndex == 0 ? _exploreScrollController : _cloudScrollController;
+    if (!activeController.hasClients) return;
+    activeController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   void _openWallpaperDetail(
@@ -223,6 +263,15 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                   ),
                 ],
               ),
+              floatingActionButton: _showBackToTop && (_selectedIndex == 0 || _selectedIndex == 2)
+                  ? FloatingActionButton(
+                      onPressed: _scrollToTop,
+                      backgroundColor: const Color(0xFF6C63FF),
+                      foregroundColor: Colors.white,
+                      mini: true,
+                      child: const Icon(Icons.arrow_upward_rounded),
+                    )
+                  : null,
               body: isWideScreen
                   ? Row(
                       children: <Widget>[
@@ -244,6 +293,14 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                               label: Text('Explore'),
                             ),
                             NavigationRailDestination(
+                              icon: Icon(Icons.category_outlined),
+                              selectedIcon: Icon(
+                                Icons.category_rounded,
+                                color: Color(0xFF6C63FF),
+                              ),
+                              label: Text('Categories'),
+                            ),
+                            NavigationRailDestination(
                               icon: Icon(Icons.cloud_outlined),
                               selectedIcon: Icon(
                                 Icons.cloud_rounded,
@@ -258,6 +315,14 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                                 color: Color(0xFF6C63FF),
                               ),
                               label: Text('Collections'),
+                            ),
+                            NavigationRailDestination(
+                              icon: Icon(Icons.settings_outlined),
+                              selectedIcon: Icon(
+                                Icons.settings_rounded,
+                                color: Color(0xFF6C63FF),
+                              ),
+                              label: Text('Settings'),
                             ),
                           ],
                         ),
@@ -292,6 +357,14 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                           label: 'Explore',
                         ),
                         NavigationDestination(
+                          icon: Icon(Icons.category_outlined),
+                          selectedIcon: Icon(
+                            Icons.category_rounded,
+                            color: Color(0xFF6C63FF),
+                          ),
+                          label: 'Categories',
+                        ),
+                        NavigationDestination(
                           icon: Icon(Icons.cloud_outlined),
                           selectedIcon: Icon(
                             Icons.cloud_rounded,
@@ -307,6 +380,14 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                           ),
                           label: 'Collections',
                         ),
+                        NavigationDestination(
+                          icon: Icon(Icons.settings_outlined),
+                          selectedIcon: Icon(
+                            Icons.settings_rounded,
+                            color: Color(0xFF6C63FF),
+                          ),
+                          label: 'Settings',
+                        ),
                       ],
                     ),
             );
@@ -321,27 +402,25 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
       index: _selectedIndex,
       children: <Widget>[
         _buildExploreTab(availableWidth),
+        CategoriesTab(controller: widget.controller),
         _buildCloudTab(availableWidth),
         _buildCollectionsTab(),
+        SettingsTab(themeController: widget.themeController),
       ],
     );
   }
 
   Widget _buildExploreTab(double availableWidth) {
     final items = widget.controller.filteredOfflineWallpapers;
-    final categories = widget.controller.offlineCategories;
-    final selectedCat = widget.controller.selectedCategory;
     final isCompact = widget.controller.compactGrid;
     final cols = _computeGridColumns(availableWidth, isCompact);
-    final activeAccent = WallpaperImageView.parseHexColor(
-      WallpaperCatalogService.accentForCategory(selectedCat),
-    );
+    final activeAccent = const Color(0xFF6C63FF);
     final showSpotlight =
-        selectedCat == WallpaperCatalogService.catAll &&
         widget.controller.searchQuery.trim().isEmpty &&
         widget.controller.spotlightWallpapers.isNotEmpty;
 
     return CustomScrollView(
+      controller: _exploreScrollController,
       slivers: <Widget>[
         SliverToBoxAdapter(
           child: Padding(
@@ -352,7 +431,10 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                 TextField(
                   key: const Key('wallpaper_search_field'),
                   controller: _searchTextController,
-                  onChanged: widget.controller.setSearchQuery,
+                  onChanged: (val) {
+                     widget.controller.setSelectedCategory(WallpaperCatalogService.catAll);
+                     widget.controller.setSearchQuery(val);
+                  },
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText:
@@ -392,51 +474,6 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                       borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide(color: activeAccent, width: 1.4),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: categories.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final cat = categories[index];
-                      final count = widget.controller.countForCategory(cat);
-                      final isSelected = selectedCat == cat;
-                      final catAccent = WallpaperImageView.parseHexColor(
-                        WallpaperCatalogService.accentForCategory(cat),
-                      );
-                      return ChoiceChip(
-                        showCheckmark: false,
-                        avatar: Icon(
-                          _iconForCategory(cat),
-                          size: 15,
-                          color: isSelected ? Colors.white : catAccent,
-                        ),
-                        label: Text('$cat ($count)'),
-                        selected: isSelected,
-                        onSelected: (_) =>
-                            widget.controller.setSelectedCategory(cat),
-                        selectedColor: const Color(0xFF6C63FF),
-                        backgroundColor: const Color(0xFF111520),
-                        side: BorderSide(
-                          color: isSelected
-                              ? const Color(0xFF6C63FF)
-                              : Colors.white12,
-                        ),
-                        labelStyle: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : const Color(0xFFB4BECC),
-                          fontWeight: isSelected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          fontSize: 12,
-                        ),
-                      );
-                    },
                   ),
                 ),
                 if (showSpotlight) ...<Widget>[
@@ -511,11 +548,11 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            '$selectedCat Wallpapers',
+                          const Text(
+                            'Explore Wallpapers',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
@@ -645,6 +682,7 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
     );
 
     return CustomScrollView(
+      controller: _cloudScrollController,
       slivers: <Widget>[
         SliverToBoxAdapter(
           child: Padding(

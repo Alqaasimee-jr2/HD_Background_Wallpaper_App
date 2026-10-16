@@ -80,6 +80,7 @@ class WallpaperController extends ChangeNotifier {
     };
     _spotlightCache = null;
     _categoryCountsCache.clear();
+    _categoryCoversCache.clear();
   }
 
   List<WallpaperItem> _buildGalleryItems(List<String> paths) {
@@ -193,14 +194,26 @@ class WallpaperController extends ChangeNotifier {
     return count;
   }
 
+  // Cache to store the cover wallpaper item for each category.
+  // This optimization reduces the linear O(N) search through offline wallpapers
+  // to an O(1) lookup, significantly speeding up the Categories tab rendering.
+  final Map<String, WallpaperItem?> _categoryCoversCache = {};
+
   WallpaperItem? coverForCategory(String category) {
     if (_offlineWallpapers.isEmpty) return null;
     if (category == WallpaperCatalogService.catAll) {
       return _offlineWallpapers.first;
     }
-    for (final item in _offlineWallpapers) {
-      if (item.category == category) return item;
+    if (_categoryCoversCache.containsKey(category)) {
+      return _categoryCoversCache[category];
     }
+    for (final item in _offlineWallpapers) {
+      if (item.category == category) {
+        _categoryCoversCache[category] = item;
+        return item;
+      }
+    }
+    _categoryCoversCache[category] = _offlineWallpapers.first;
     return _offlineWallpapers.first;
   }
 

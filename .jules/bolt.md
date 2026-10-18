@@ -1,1 +1,5 @@
 2024-05-20 - [ScrollController Attachment in IndexedStack], **Learning:** [When using multiple ScrollViews wrapped in an IndexedStack, they stay mounted in the widget tree. Assigning a single ScrollController to multiple mounted CustomScrollViews causes a state assertion error on scroll.], **Action:** [Provide unique ScrollControllers to each nested ScrollView inside an IndexedStack, or conditionally use them, then sync state through dedicated listeners.]
+
+## 2024-10-18 - [Memoizing Expensive Getters in ChangeNotifier]
+**Learning:** [When high-level widgets (like `HomeShellScreen`) use `ListenableBuilder` to listen to a `ChangeNotifier`, any unrelated state change that triggers `notifyListeners()` will cause full rebuilds. This forces expensive O(N) getters (like filtering a massive list of wallpapers) to re-evaluate on every tick, leading to severe performance degradation.]
+**Action:** [Always memoize derived O(N) getters in `ChangeNotifier` by caching their results and invalidating the cache explicitly when only the dependent state changes.]

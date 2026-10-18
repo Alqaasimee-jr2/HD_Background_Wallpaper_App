@@ -36,6 +36,10 @@ class WallpaperController extends ChangeNotifier {
   List<WallpaperItem>? _spotlightCache;
   final Map<String, int> _categoryCountsCache = <String, int>{};
 
+  // Memoization for expensive filtered lists
+  List<WallpaperItem>? _filteredOfflineCache;
+  List<WallpaperItem>? _filteredCloudCache;
+
   String _selectedCategory = WallpaperCatalogService.catAll;
   String _selectedCloudTopic = 'All';
   String _searchQuery = '';
@@ -80,6 +84,8 @@ class WallpaperController extends ChangeNotifier {
     };
     _spotlightCache = null;
     _categoryCountsCache.clear();
+    _filteredOfflineCache = null;
+    _filteredCloudCache = null;
   }
 
   List<WallpaperItem> _buildGalleryItems(List<String> paths) {
@@ -141,11 +147,15 @@ class WallpaperController extends ChangeNotifier {
   }
 
   List<WallpaperItem> get filteredOfflineWallpapers {
+    if (_filteredOfflineCache != null) return _filteredOfflineCache!;
+
     final normalizedQuery = _searchQuery.trim().toLowerCase();
     final sourceList = _isShuffled
         ? _shuffledOfflineWallpapers
         : _offlineWallpapers;
-    return sourceList.where((item) {
+
+    // Memoize the filtered list to avoid O(N) re-evaluation on unrelated notifyListeners()
+    _filteredOfflineCache = sourceList.where((item) {
       final matchesCategory =
           _selectedCategory == WallpaperCatalogService.catAll ||
           item.category == _selectedCategory;
@@ -156,18 +166,26 @@ class WallpaperController extends ChangeNotifier {
           item.category.toLowerCase().contains(normalizedQuery);
       return matchesCategory && matchesSearch;
     }).toList();
+
+    return _filteredOfflineCache!;
   }
 
   List<WallpaperItem> get filteredCloudWallpapers {
+    if (_filteredCloudCache != null) return _filteredCloudCache!;
+
     if (_selectedCloudTopic == 'All') {
-      return _cloudWallpapers;
+      _filteredCloudCache = _cloudWallpapers;
+    } else {
+      // Memoize the filtered list to avoid O(N) re-evaluation on unrelated notifyListeners()
+      _filteredCloudCache = _cloudWallpapers
+          .where(
+            (item) =>
+                item.category.toLowerCase() == _selectedCloudTopic.toLowerCase(),
+          )
+          .toList();
     }
-    return _cloudWallpapers
-        .where(
-          (item) =>
-              item.category.toLowerCase() == _selectedCloudTopic.toLowerCase(),
-        )
-        .toList();
+
+    return _filteredCloudCache!;
   }
 
   List<WallpaperItem> get favoriteWallpapers {
@@ -221,30 +239,35 @@ class WallpaperController extends ChangeNotifier {
     _shuffledOfflineWallpapers = List<WallpaperItem>.from(_offlineWallpapers)
       ..shuffle(_random);
     _isShuffled = true;
+    _filteredOfflineCache = null; // Invalidate cache
     notifyListeners();
   }
 
   void resetOrder() {
     if (!_isShuffled) return;
     _isShuffled = false;
+    _filteredOfflineCache = null; // Invalidate cache
     notifyListeners();
   }
 
   void setSelectedCategory(String category) {
     if (_selectedCategory == category) return;
     _selectedCategory = category;
+    _filteredOfflineCache = null; // Invalidate cache
     notifyListeners();
   }
 
   void setSelectedCloudTopic(String topic) {
     if (_selectedCloudTopic == topic) return;
     _selectedCloudTopic = topic;
+    _filteredCloudCache = null; // Invalidate cache
     notifyListeners();
   }
 
   void setSearchQuery(String query) {
     if (_searchQuery == query) return;
     _searchQuery = query;
+    _filteredOfflineCache = null; // Invalidate cache
     notifyListeners();
   }
 

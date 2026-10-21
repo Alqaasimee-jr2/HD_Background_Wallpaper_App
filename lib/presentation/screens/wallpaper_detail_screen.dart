@@ -206,7 +206,9 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                   ),
                   const SizedBox(height: 12),
                   ...widget.controller.collections.map((collection) {
-                    final contains = collection.wallpaperIds.contains(current.id);
+                    final contains = collection.wallpaperIds.contains(
+                      current.id,
+                    );
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: const Icon(
@@ -281,7 +283,9 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                           navigator.pop();
                           messenger.showSnackBar(
                             SnackBar(
-                              content: Text('Created "$name" & added wallpaper'),
+                              content: Text(
+                                'Created "$name" & added wallpaper',
+                              ),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -379,8 +383,10 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                         ),
                 ),
               ),
-              if (mode == MockupMode.lockScreen) const LockScreenMockupOverlay(),
-              if (mode == MockupMode.homeScreen) const HomeScreenMockupOverlay(),
+              if (mode == MockupMode.lockScreen)
+                const LockScreenMockupOverlay(),
+              if (mode == MockupMode.homeScreen)
+                const HomeScreenMockupOverlay(),
               if (!_hideControls || mode != MockupMode.clean)
                 SafeArea(
                   child: Padding(
@@ -498,20 +504,23 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                                 _MockupModeChip(
                                   label: 'Clean',
                                   selected: mode == MockupMode.clean,
-                                  onTap: () => widget.controller
-                                      .setMockupMode(MockupMode.clean),
+                                  onTap: () => widget.controller.setMockupMode(
+                                    MockupMode.clean,
+                                  ),
                                 ),
                                 _MockupModeChip(
                                   label: 'Lock Screen',
                                   selected: mode == MockupMode.lockScreen,
-                                  onTap: () => widget.controller
-                                      .setMockupMode(MockupMode.lockScreen),
+                                  onTap: () => widget.controller.setMockupMode(
+                                    MockupMode.lockScreen,
+                                  ),
                                 ),
                                 _MockupModeChip(
                                   label: 'Home Screen',
                                   selected: mode == MockupMode.homeScreen,
-                                  onTap: () => widget.controller
-                                      .setMockupMode(MockupMode.homeScreen),
+                                  onTap: () => widget.controller.setMockupMode(
+                                    MockupMode.homeScreen,
+                                  ),
                                 ),
                               ],
                             ),
@@ -531,23 +540,41 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                               children: <Widget>[
                                 _MockupModeChip(
                                   label: 'Normal',
-                                  selected: _filterMode == WallpaperFilterMode.none,
-                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.none),
+                                  selected:
+                                      _filterMode == WallpaperFilterMode.none,
+                                  onTap: () => setState(
+                                    () =>
+                                        _filterMode = WallpaperFilterMode.none,
+                                  ),
                                 ),
                                 _MockupModeChip(
                                   label: 'B&W',
-                                  selected: _filterMode == WallpaperFilterMode.grayscale,
-                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.grayscale),
+                                  selected:
+                                      _filterMode ==
+                                      WallpaperFilterMode.grayscale,
+                                  onTap: () => setState(
+                                    () => _filterMode =
+                                        WallpaperFilterMode.grayscale,
+                                  ),
                                 ),
                                 _MockupModeChip(
                                   label: 'Inverted',
-                                  selected: _filterMode == WallpaperFilterMode.inverted,
-                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.inverted),
+                                  selected:
+                                      _filterMode ==
+                                      WallpaperFilterMode.inverted,
+                                  onTap: () => setState(
+                                    () => _filterMode =
+                                        WallpaperFilterMode.inverted,
+                                  ),
                                 ),
                                 _MockupModeChip(
                                   label: 'Sepia',
-                                  selected: _filterMode == WallpaperFilterMode.sepia,
-                                  onTap: () => setState(() => _filterMode = WallpaperFilterMode.sepia),
+                                  selected:
+                                      _filterMode == WallpaperFilterMode.sepia,
+                                  onTap: () => setState(
+                                    () =>
+                                        _filterMode = WallpaperFilterMode.sepia,
+                                  ),
                                 ),
                               ],
                             ),
@@ -607,14 +634,17 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
                                   Expanded(
                                     child: FilledButton.icon(
                                       style: FilledButton.styleFrom(
-                                        backgroundColor: const Color(0xFF6C63FF),
+                                        backgroundColor: const Color(
+                                          0xFF6C63FF,
+                                        ),
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.symmetric(
                                           vertical: 13,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                         ),
                                       ),
                                       onPressed: _isWorking
@@ -718,10 +748,7 @@ class _ApplyOptionTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Colors.white38,
-              ),
+              const Icon(Icons.chevron_right_rounded, color: Colors.white38),
             ],
           ),
         ),

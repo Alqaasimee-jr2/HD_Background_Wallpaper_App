@@ -5,16 +5,15 @@ import '../widgets/wallpaper_card.dart';
 import 'category_wallpapers_screen.dart';
 
 class CategoriesTab extends StatelessWidget {
-  const CategoriesTab({
-    super.key,
-    required this.controller,
-  });
+  const CategoriesTab({super.key, required this.controller});
 
   final WallpaperController controller;
 
   @override
   Widget build(BuildContext context) {
-    final categories = controller.offlineCategories.where((c) => c != WallpaperCatalogService.catAll).toList();
+    final categories = controller.offlineCategories
+        .where((c) => c != WallpaperCatalogService.catAll)
+        .toList();
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
@@ -54,19 +53,13 @@ class CategoriesTab extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (coverItem != null)
-                  WallpaperImageView(
-                    item: coverItem,
-                    isThumbnail: true,
-                  ),
+                  WallpaperImageView(item: coverItem, isThumbnail: true),
                 Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black26,
-                        Colors.black87,
-                      ],
+                      colors: [Colors.black26, Colors.black87],
                     ),
                   ),
                 ),

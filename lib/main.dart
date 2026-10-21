@@ -17,7 +17,12 @@ Future<void> main() async {
   final controller = WallpaperController();
   final themeController = ThemeController();
   await controller.initialize();
-  runApp(HDWallpaperStudioApp(controller: controller, themeController: themeController));
+  runApp(
+    HDWallpaperStudioApp(
+      controller: controller,
+      themeController: themeController,
+    ),
+  );
 }
 
 class HDWallpaperStudioApp extends StatelessWidget {
@@ -36,14 +41,14 @@ class HDWallpaperStudioApp extends StatelessWidget {
       listenable: themeController,
       builder: (context, _) {
         if (!themeController.isInitialized) {
-           return const MaterialApp(
-             home: Scaffold(
-               backgroundColor: Color(0xFF06080D),
-               body: Center(
-                 child: CircularProgressIndicator(color: Color(0xFF6C63FF)),
-               ),
-             ),
-           );
+          return const MaterialApp(
+            home: Scaffold(
+              backgroundColor: Color(0xFF06080D),
+              body: Center(
+                child: CircularProgressIndicator(color: Color(0xFF6C63FF)),
+              ),
+            ),
+          );
         }
         final seedColor = themeController.seedColor;
 

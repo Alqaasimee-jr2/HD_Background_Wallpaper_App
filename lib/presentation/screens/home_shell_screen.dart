@@ -43,8 +43,12 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
   @override
   void initState() {
     super.initState();
-    _exploreScrollController.addListener(() => _scrollListener(_exploreScrollController));
-    _cloudScrollController.addListener(() => _scrollListener(_cloudScrollController));
+    _exploreScrollController.addListener(
+      () => _scrollListener(_exploreScrollController),
+    );
+    _cloudScrollController.addListener(
+      () => _scrollListener(_cloudScrollController),
+    );
   }
 
   @override
@@ -56,7 +60,9 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
   }
 
   void _scrollToTop() {
-    final activeController = _selectedIndex == 0 ? _exploreScrollController : _cloudScrollController;
+    final activeController = _selectedIndex == 0
+        ? _exploreScrollController
+        : _cloudScrollController;
     if (!activeController.hasClients) return;
     activeController.animateTo(
       0,
@@ -263,7 +269,8 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                   ),
                 ],
               ),
-              floatingActionButton: _showBackToTop && (_selectedIndex == 0 || _selectedIndex == 2)
+              floatingActionButton:
+                  _showBackToTop && (_selectedIndex == 0 || _selectedIndex == 2)
                   ? FloatingActionButton(
                       onPressed: _scrollToTop,
                       backgroundColor: const Color(0xFF6C63FF),
@@ -326,14 +333,9 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                             ),
                           ],
                         ),
-                        const VerticalDivider(
-                          width: 1,
-                          color: Colors.white12,
-                        ),
+                        const VerticalDivider(width: 1, color: Colors.white12),
                         Expanded(
-                          child: _buildActiveTabBody(
-                            constraints.maxWidth - 88,
-                          ),
+                          child: _buildActiveTabBody(constraints.maxWidth - 88),
                         ),
                       ],
                     )
@@ -432,8 +434,10 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                   key: const Key('wallpaper_search_field'),
                   controller: _searchTextController,
                   onChanged: (val) {
-                     widget.controller.setSelectedCategory(WallpaperCatalogService.catAll);
-                     widget.controller.setSearchQuery(val);
+                    widget.controller.setSelectedCategory(
+                      WallpaperCatalogService.catAll,
+                    );
+                    widget.controller.setSearchQuery(val);
                   },
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -443,10 +447,7 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                       color: Color(0xFFA0AAB8),
                       fontSize: 13,
                     ),
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      color: activeAccent,
-                    ),
+                    prefixIcon: Icon(Icons.search_rounded, color: activeAccent),
                     suffixIcon: widget.controller.searchQuery.isNotEmpty
                         ? IconButton(
                             onPressed: () {
@@ -585,7 +586,9 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                     ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      tooltip: isCompact ? '2-Column View' : '3-Column Compact View',
+                      tooltip: isCompact
+                          ? '2-Column View'
+                          : '3-Column Compact View',
                       onPressed: widget.controller.toggleCompactGrid,
                       icon: Icon(
                         isCompact
@@ -652,20 +655,17 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                 crossAxisSpacing: isCompact ? 10 : 14,
                 childAspectRatio: 0.62,
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final item = items[index];
-                  return WallpaperCard(
-                    item: item,
-                    compact: isCompact,
-                    isFavorite: widget.controller.isFavorite(item.id),
-                    onTap: () => _openWallpaperDetail(item, playlist: items),
-                    onToggleFavorite: () =>
-                        widget.controller.toggleFavorite(item.id),
-                  );
-                },
-                childCount: items.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final item = items[index];
+                return WallpaperCard(
+                  item: item,
+                  compact: isCompact,
+                  isFavorite: widget.controller.isFavorite(item.id),
+                  onTap: () => _openWallpaperDetail(item, playlist: items),
+                  onToggleFavorite: () =>
+                      widget.controller.toggleFavorite(item.id),
+                );
+              }, childCount: items.length),
             ),
           ),
       ],
@@ -775,22 +775,16 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
               crossAxisSpacing: 14,
               childAspectRatio: 0.62,
             ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final item = cloudItems[index];
-                return WallpaperCard(
-                  item: item,
-                  isFavorite: widget.controller.isFavorite(item.id),
-                  onTap: () => _openWallpaperDetail(
-                    item,
-                    playlist: cloudItems,
-                  ),
-                  onToggleFavorite: () =>
-                      widget.controller.toggleFavorite(item.id),
-                );
-              },
-              childCount: cloudItems.length,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final item = cloudItems[index];
+              return WallpaperCard(
+                item: item,
+                isFavorite: widget.controller.isFavorite(item.id),
+                onTap: () => _openWallpaperDetail(item, playlist: cloudItems),
+                onToggleFavorite: () =>
+                    widget.controller.toggleFavorite(item.id),
+              );
+            }, childCount: cloudItems.length),
           ),
         ),
       ],
@@ -879,10 +873,8 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                       child: WallpaperCard(
                         item: item,
                         isFavorite: true,
-                        onTap: () => _openWallpaperDetail(
-                          item,
-                          playlist: favorites,
-                        ),
+                        onTap: () =>
+                            _openWallpaperDetail(item, playlist: favorites),
                         onToggleFavorite: () =>
                             widget.controller.toggleFavorite(item.id),
                       ),
@@ -938,10 +930,8 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                       child: WallpaperCard(
                         item: item,
                         isFavorite: widget.controller.isFavorite(item.id),
-                        onTap: () => _openWallpaperDetail(
-                          item,
-                          playlist: galleryItems,
-                        ),
+                        onTap: () =>
+                            _openWallpaperDetail(item, playlist: galleryItems),
                         onToggleFavorite: () =>
                             widget.controller.toggleFavorite(item.id),
                       ),
@@ -1022,10 +1012,7 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
                       item: item,
                       compact: true,
                       isFavorite: widget.controller.isFavorite(item.id),
-                      onTap: () => _openWallpaperDetail(
-                        item,
-                        playlist: items,
-                      ),
+                      onTap: () => _openWallpaperDetail(item, playlist: items),
                       onToggleFavorite: () =>
                           widget.controller.toggleFavorite(item.id),
                     ),

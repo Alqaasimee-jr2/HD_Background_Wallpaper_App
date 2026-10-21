@@ -16,7 +16,8 @@ class CategoryWallpapersScreen extends StatefulWidget {
   final WallpaperController controller;
 
   @override
-  State<CategoryWallpapersScreen> createState() => _CategoryWallpapersScreenState();
+  State<CategoryWallpapersScreen> createState() =>
+      _CategoryWallpapersScreenState();
 }
 
 class _CategoryWallpapersScreenState extends State<CategoryWallpapersScreen> {
@@ -165,18 +166,27 @@ class _CategoryWallpapersScreenState extends State<CategoryWallpapersScreen> {
                                   : null,
                               filled: true,
                               fillColor: const Color(0xFF111520),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(18),
-                                borderSide: const BorderSide(color: Colors.white12),
+                                borderSide: const BorderSide(
+                                  color: Colors.white12,
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(18),
-                                borderSide: const BorderSide(color: Colors.white12),
+                                borderSide: const BorderSide(
+                                  color: Colors.white12,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide(color: activeAccent, width: 1.4),
+                                borderSide: BorderSide(
+                                  color: activeAccent,
+                                  width: 1.4,
+                                ),
                               ),
                             ),
                           ),
@@ -195,7 +205,9 @@ class _CategoryWallpapersScreenState extends State<CategoryWallpapersScreen> {
                               ),
                               IconButton(
                                 visualDensity: VisualDensity.compact,
-                                tooltip: isCompact ? '2-Column View' : '3-Column Compact View',
+                                tooltip: isCompact
+                                    ? '2-Column View'
+                                    : '3-Column Compact View',
                                 onPressed: widget.controller.toggleCompactGrid,
                                 icon: Icon(
                                   isCompact
@@ -251,20 +263,17 @@ class _CategoryWallpapersScreenState extends State<CategoryWallpapersScreen> {
                           crossAxisSpacing: 14,
                           childAspectRatio: 0.62,
                         ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final item = _filteredWallpapers[index];
-                            return WallpaperCard(
-                              item: item,
-                              compact: isCompact,
-                              isFavorite: widget.controller.isFavorite(item.id),
-                              onTap: () => _openWallpaperDetail(item),
-                              onToggleFavorite: () =>
-                                  widget.controller.toggleFavorite(item.id),
-                            );
-                          },
-                          childCount: _filteredWallpapers.length,
-                        ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final item = _filteredWallpapers[index];
+                          return WallpaperCard(
+                            item: item,
+                            compact: isCompact,
+                            isFavorite: widget.controller.isFavorite(item.id),
+                            onTap: () => _openWallpaperDetail(item),
+                            onToggleFavorite: () =>
+                                widget.controller.toggleFavorite(item.id),
+                          );
+                        }, childCount: _filteredWallpapers.length),
                       ),
                     ),
                 ],

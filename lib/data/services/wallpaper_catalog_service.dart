@@ -43,7 +43,10 @@ class WallpaperCatalogService {
       final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
       assetPaths = manifest
           .listAssets()
-          .where((path) => path.startsWith('assets/wallpapers/') && isImageFile(path))
+          .where(
+            (path) =>
+                path.startsWith('assets/wallpapers/') && isImageFile(path),
+          )
           .toList();
     } catch (_) {
       assetPaths = <String>[];
@@ -61,8 +64,9 @@ class WallpaperCatalogService {
 
   static WallpaperItem buildFromAssetPath(String assetPath) {
     final slashIndex = assetPath.lastIndexOf('/');
-    final fileName =
-        slashIndex >= 0 ? assetPath.substring(slashIndex + 1) : assetPath;
+    final fileName = slashIndex >= 0
+        ? assetPath.substring(slashIndex + 1)
+        : assetPath;
     final category = categorizeFileName(fileName);
     return WallpaperItem(
       id: assetPath,
@@ -219,10 +223,13 @@ class WallpaperCatalogService {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
     if (base.isEmpty) return 'HD Wallpaper';
-    return base.split(' ').map((word) {
-      if (word.isEmpty) return '';
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    return base
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return '';
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   static String accentForCategory(String category) {
@@ -253,7 +260,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_1',
         title: 'Cyberpunk Neon Horizon 4K',
-        path: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1440&q=85',
         category: 'Cyberpunk',
         source: WallpaperSource.cloud,
         accentColorHex: '#FF007F',
@@ -261,7 +269,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_2',
         title: 'Tokyo Midnight Synthwave',
-        path: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1440&q=85',
         category: 'Cyberpunk',
         source: WallpaperSource.cloud,
         accentColorHex: '#00E5FF',
@@ -269,7 +278,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_3',
         title: 'Futuristic Cyber Grid',
-        path: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1440&q=85',
         category: 'Cyberpunk',
         source: WallpaperSource.cloud,
         accentColorHex: '#6C63FF',
@@ -277,7 +287,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_4',
         title: 'Deep Space Carina Nebula',
-        path: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1440&q=85',
         category: 'Space',
         source: WallpaperSource.cloud,
         accentColorHex: '#9B59B6',
@@ -285,7 +296,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_5',
         title: 'Aurora Borealis Cosmic Sky',
-        path: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1440&q=85',
         category: 'Space',
         source: WallpaperSource.cloud,
         accentColorHex: '#2ECC71',
@@ -293,7 +305,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_6',
         title: 'Milky Way Galactic Core',
-        path: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1440&q=85',
         category: 'Space',
         source: WallpaperSource.cloud,
         accentColorHex: '#3498DB',
@@ -301,7 +314,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_7',
         title: 'Alpine Peaks at Golden Dusk',
-        path: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1440&q=85',
         category: 'Nature',
         source: WallpaperSource.cloud,
         accentColorHex: '#E67E22',
@@ -309,7 +323,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_8',
         title: 'Misty Emerald Pine Valley',
-        path: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1440&q=85',
         category: 'Nature',
         source: WallpaperSource.cloud,
         accentColorHex: '#27AE60',
@@ -317,7 +332,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_9',
         title: 'Pitch Black OLED Crimson Ring',
-        path: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1440&q=85',
         category: 'AMOLED',
         source: WallpaperSource.cloud,
         accentColorHex: '#E74C3C',
@@ -325,7 +341,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_10',
         title: 'True Black Minimal Eclipse',
-        path: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=1440&q=85',
         category: 'AMOLED',
         source: WallpaperSource.cloud,
         accentColorHex: '#00E5FF',
@@ -333,7 +350,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_11',
         title: 'AMOLED Neon Silhouette',
-        path: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1440&q=85',
         category: 'AMOLED',
         source: WallpaperSource.cloud,
         accentColorHex: '#9B59B6',
@@ -341,7 +359,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_12',
         title: 'Shibuya Sunset Anime Sky',
-        path: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1440&q=85',
         category: 'Anime',
         source: WallpaperSource.cloud,
         accentColorHex: '#FF6B81',
@@ -349,7 +368,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_13',
         title: 'Kyoto Torii Gate Lanterns',
-        path: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1440&q=85',
         category: 'Anime',
         source: WallpaperSource.cloud,
         accentColorHex: '#FF4757',
@@ -357,7 +377,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_14',
         title: 'Nordic Minimal Sand Dunes',
-        path: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1440&q=85',
         category: 'Minimal',
         source: WallpaperSource.cloud,
         accentColorHex: '#FDCB6E',
@@ -365,7 +386,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_15',
         title: 'Serene Pastel Horizon',
-        path: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1440&q=85',
         category: 'Minimal',
         source: WallpaperSource.cloud,
         accentColorHex: '#74B9FF',
@@ -373,7 +395,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_16',
         title: 'Brutalist Concrete Geometry',
-        path: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1440&q=85',
         category: 'Architecture',
         source: WallpaperSource.cloud,
         accentColorHex: '#A29BFE',
@@ -381,7 +404,8 @@ class WallpaperCatalogService {
       WallpaperItem(
         id: 'cloud_17',
         title: 'Glass Skyscraper Symmetry',
-        path: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1440&q=85',
+        path:
+            'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1440&q=85',
         category: 'Architecture',
         source: WallpaperSource.cloud,
         accentColorHex: '#00CEC9',

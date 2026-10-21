@@ -138,10 +138,7 @@ class WallpaperCard extends StatelessWidget {
             children: <Widget>[
               Hero(
                 tag: 'wallpaper_${item.id}',
-                child: WallpaperImageView(
-                  item: item,
-                  isThumbnail: true,
-                ),
+                child: WallpaperImageView(item: item, isThumbnail: true),
               ),
               const DecoratedBox(
                 decoration: BoxDecoration(

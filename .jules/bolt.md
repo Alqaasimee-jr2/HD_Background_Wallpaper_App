@@ -1,1 +1,5 @@
 2024-05-20 - [ScrollController Attachment in IndexedStack], **Learning:** [When using multiple ScrollViews wrapped in an IndexedStack, they stay mounted in the widget tree. Assigning a single ScrollController to multiple mounted CustomScrollViews causes a state assertion error on scroll.], **Action:** [Provide unique ScrollControllers to each nested ScrollView inside an IndexedStack, or conditionally use them, then sync state through dedicated listeners.]
+
+## 2025-02-12 - [ChangeNotifier O(N) Getters and Rebuilds]
+**Learning:** [In Flutter's `ChangeNotifier`, high-level widgets using `ListenableBuilder` will trigger full rebuilds and re-evaluate getters upon any unrelated state change that calls `notifyListeners()`. If a getter performs expensive O(N) operations like filtering a large list, this leads to severe performance degradation due to redundant un-cached computations.]
+**Action:** [Always memoize expensive derived state, such as filtered lists, in `ChangeNotifier` controllers. Implement clear cache invalidation logic whenever dependencies or underlying data sources are updated to maintain optimal performance and prevent stale UI states.]

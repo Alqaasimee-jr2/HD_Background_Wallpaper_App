@@ -1,0 +1,12 @@
+--- lib/presentation/state/wallpaper_controller.dart
++++ lib/presentation/state/wallpaper_controller.dart
+@@ -66,8 +66,10 @@
+   Future<void> initialize() async {
+     _offlineWallpapers = await _catalogService.loadOfflineWallpapers();
++    _filteredOfflineCache = null;
+     _shuffledOfflineWallpapers = List<WallpaperItem>.from(_offlineWallpapers);
+     _cloudWallpapers = _catalogService.getCloudWallpapers();
++    _filteredCloudCache = null;
+     _favoriteIds = await _storageService.loadFavorites();
+     _collections = await _storageService.loadCollections();
+     final galleryPaths = await _storageService.loadGalleryPaths();

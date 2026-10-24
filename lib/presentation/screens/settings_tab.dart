@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import '../state/theme_controller.dart';
 
 class SettingsTab extends StatelessWidget {
-  const SettingsTab({
-    super.key,
-    required this.themeController,
-  });
+  const SettingsTab({super.key, required this.themeController});
 
   final ThemeController themeController;
 
@@ -75,26 +72,42 @@ class SettingsTab extends StatelessWidget {
                       children: [
                         _ColorOption(
                           color: const Color(0xFF6C63FF),
-                          selected: themeController.seedColor == const Color(0xFF6C63FF),
-                          onTap: () => themeController.setSeedColor(const Color(0xFF6C63FF)),
+                          selected:
+                              themeController.seedColor ==
+                              const Color(0xFF6C63FF),
+                          onTap: () => themeController.setSeedColor(
+                            const Color(0xFF6C63FF),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         _ColorOption(
                           color: const Color(0xFF00E5FF),
-                          selected: themeController.seedColor == const Color(0xFF00E5FF),
-                          onTap: () => themeController.setSeedColor(const Color(0xFF00E5FF)),
+                          selected:
+                              themeController.seedColor ==
+                              const Color(0xFF00E5FF),
+                          onTap: () => themeController.setSeedColor(
+                            const Color(0xFF00E5FF),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         _ColorOption(
                           color: const Color(0xFFFF4757),
-                          selected: themeController.seedColor == const Color(0xFFFF4757),
-                          onTap: () => themeController.setSeedColor(const Color(0xFFFF4757)),
+                          selected:
+                              themeController.seedColor ==
+                              const Color(0xFFFF4757),
+                          onTap: () => themeController.setSeedColor(
+                            const Color(0xFFFF4757),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         _ColorOption(
                           color: const Color(0xFF2ECC71),
-                          selected: themeController.seedColor == const Color(0xFF2ECC71),
-                          onTap: () => themeController.setSeedColor(const Color(0xFF2ECC71)),
+                          selected:
+                              themeController.seedColor ==
+                              const Color(0xFF2ECC71),
+                          onTap: () => themeController.setSeedColor(
+                            const Color(0xFF2ECC71),
+                          ),
                         ),
                       ],
                     ),
@@ -127,7 +140,9 @@ class SettingsTab extends StatelessWidget {
                 children: [
                   SwitchListTile(
                     title: const Text('High Quality Downloads'),
-                    subtitle: const Text('Save wallpapers in maximum resolution'),
+                    subtitle: const Text(
+                      'Save wallpapers in maximum resolution',
+                    ),
                     value: true,
                     onChanged: (val) {},
                     secondary: const Icon(Icons.hd_rounded),
@@ -135,7 +150,9 @@ class SettingsTab extends StatelessWidget {
                   const Divider(height: 1),
                   SwitchListTile(
                     title: const Text('Auto-save to Gallery'),
-                    subtitle: const Text('Save applied wallpapers automatically'),
+                    subtitle: const Text(
+                      'Save applied wallpapers automatically',
+                    ),
                     value: false,
                     onChanged: (val) {},
                     secondary: const Icon(Icons.save_alt_rounded),
@@ -178,16 +195,12 @@ class _ColorOption extends StatelessWidget {
                     color: color.withValues(alpha: 0.4),
                     blurRadius: 8,
                     spreadRadius: 2,
-                  )
+                  ),
                 ]
               : null,
         ),
         child: selected
-            ? const Icon(
-                Icons.check_rounded,
-                color: Colors.white,
-                size: 18,
-              )
+            ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
             : null,
       ),
     );

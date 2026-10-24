@@ -35,10 +35,7 @@ class NativeWallpaperBridge {
       final bytes = await resolveBytes(item);
       final result = await _channel.invokeMethod<bool>(
         'setWallpaper',
-        <String, dynamic>{
-          'bytes': bytes,
-          'target': target,
-        },
+        <String, dynamic>{'bytes': bytes, 'target': target},
       );
       return result ?? false;
     } on MissingPluginException {
@@ -55,13 +52,14 @@ class NativeWallpaperBridge {
       final safeName = item.title
           .replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_')
           .toLowerCase();
-      final result = await _channel.invokeMethod<bool>(
-        'saveToGallery',
-        <String, dynamic>{
-          'bytes': bytes,
-          'fileName': 'hd_wallpaper_${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg',
-        },
-      );
+      final result = await _channel.invokeMethod<bool>('saveToGallery', <
+        String,
+        dynamic
+      >{
+        'bytes': bytes,
+        'fileName':
+            'hd_wallpaper_${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      });
       return result ?? false;
     } on MissingPluginException {
       return true;

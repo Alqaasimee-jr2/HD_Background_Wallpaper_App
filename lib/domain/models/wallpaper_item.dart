@@ -1,14 +1,6 @@
-enum WallpaperSource {
-  asset,
-  cloud,
-  gallery,
-}
+enum WallpaperSource { asset, cloud, gallery }
 
-enum MockupMode {
-  clean,
-  lockScreen,
-  homeScreen,
-}
+enum MockupMode { clean, lockScreen, homeScreen }
 
 class WallpaperItem {
   const WallpaperItem({
